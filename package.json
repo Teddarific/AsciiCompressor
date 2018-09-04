@@ -1,0 +1,11 @@
+{
+  "name": "AsciiCompressor",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Teddarific/AsciiCompressor.git",
+  "author": "Teddarific <teddy.ni.19@dartmouth.edu>",
+  "license": "MIT",
+  "dependencies": {
+    "mocha": "^5.2.0"
+  }
+}

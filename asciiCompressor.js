@@ -1,5 +1,5 @@
-let fs = require('fs');
-let path = require('path');
+const fs = require('fs');
+const path = require('path');
 
 const MAX_WIDTH = 100;
 
@@ -41,12 +41,12 @@ function encode(data) {
       }
     });
 
-    // Check for edge cases
-    if ( currCount === MAX_WIDTH ){
+    // Check for edge case if row is only one character
+    if ( currCount === MAX_WIDTH){
       result = `${lastSeen}`;
     } else if ( currCount > 0 ){
       currCount = currCount.toString().length == 1 ? '0' + currCount : currCount.toString();
-      result += `${currCount}${lastSeen} `;
+      result += `${currCount}${lastSeen}`;
     }
     allResults.push(result);
   });
@@ -140,3 +140,5 @@ function analyzeCompression(originalFile, compressedFile){
   const compressedCb = (data) => {console.log(`Compressed: ${data.length}`)};
   readFile(compressedFile, compressedCb);
 }
+
+module.exports = { encode, decode, readFile };
