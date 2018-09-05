@@ -15,8 +15,10 @@ To **encode** a file,
 node asciiCompressor.js encode ASCII_ART_FILE.txt OUTPUT_FILE_NAME.txt
 
 // Or shorthand, use 'e' instead
-
 node asciiCompressor.js e ASCII_ART_FILE.txt OUTPUT_FILE_NAME.txt
+
+// For example,
+node asciiCompress.js e asciiArt/data.txt output/data-encoded.txt
 ```
 
 To **decode** a file,
@@ -25,8 +27,10 @@ To **decode** a file,
 node asciiCompressor.js decode ENCODED_FILE_NAME.txt OUTPUT_FILE_NAME.txt
 
 // Or shorthand, use 'd' instead
-
 node asciiCompressor.js d ENCODED_FILE_NAME.txt OUTPUT_FILE_NAME.txt
+
+// For example,
+node asciiCompress.js d asciiArt/data.txt output/data-encoded.txt
 ```
 
 To **analyze** how well a file would be compressed using this algorithm,
@@ -35,11 +39,13 @@ To **analyze** how well a file would be compressed using this algorithm,
 node asciiCompressor.js analyze ASCII_ART_FILE.txt
 
 // Or shorthand, use 'a' instead
-
 node asciiCompressor.js a ASCII_ART_FILE.txt
+
+// For example,
+node asciiCompress.js a asciiArt/data.txt
 ```
 
-To run the **unit** and **end to end** tests,
+To run the **unit** and **e2e** tests,
 
 ```
 ./node_modules/mocha/bin/mocha ./
@@ -59,7 +65,7 @@ Instead, given our assumption that the maximum length of a row is 100 characters
 
 ## Results and Analysis
 
-As with most lossless compression algorithms, RLE works well for certain data sets and not so well for others. As expected from RLE, this algorithm works well for relatively larger ASCII art maps, and ones that have lots of character repetition. In some cases, RLE is actually *worse* than the base file itself. Here are the results of some of the example files (which can be found in the folder `asciiArt` at the top level:
+As with most lossless compression algorithms, RLE works well for certain data sets and not so well for others. As expected from RLE, this algorithm works well for relatively larger ASCII art maps, and ones that have lots of character repetition. As seen in the results below, the files with many lines also tend to do better. In some cases, RLE is actually *worse* than the base file itself. Here are the results of some of the example files (which can be found in the folder `asciiArt` at the top level:
 
 Test File | Rows | Original Size | Compressed Size | Percent Change
 :---:|:---:|:---:|:---:|:---:
@@ -69,3 +75,9 @@ angry.txt | 87 | 3741 | 3245 | - 13%
 rose.txt | 46 | 1971 | 1512 | - 23%
 cat.txt | 87 | 5284 | 3074 | - 41%
 data.txt | 85 | 5496 | 3114 | - 43%
+
+## Optimizations
+
+As mentioned, some files actually do worse. Thus, an optimization that could be made is when the file does worse with RLE compression, is to use another form of compression. It's likely that Huffman Encoding or other similar compression algorithms could support at least a little bit of compression. Alternatively, an easy way to get around this is to simply use the original file. Although this doesn't compress the file at all, it's better than increasing the size of the file.
+
+Another optimization is that instead of expressing each chain of characters as three bytes, instead represent them in 15 bits. The first 7 can be used to represent the count (since 7 bits can be used to represent 0 - 123), and 8 to represent the character. This would save 9 bits per encoding string, which can actually add up.
