@@ -59,7 +59,7 @@ My initial thought was to use Huffman Encoding. However, Huffman Encoding involv
 
 I decided to implement a rudimentary version of a [Run Length Encoding algorithm](https://en.wikipedia.org/wiki/Run-length_encoding). Basically, instead of representing a string of the same character, such as `aaaaa`, we represent it as it's count, and the character, so `aaaaa` becomes `5a`. We effectively turn each consequence sequence of the same character into two bytes. Likewise, `abbcccdddd` becomes `1a2b3c4d`.
 
-However, implementation wise, things get tricky since we must support all 256 ASCII characters - which include numbers. In this case, without an additional delimiter, it becomes impossible to differentiate which character is the character count, and which one is the character itself. For example, if the text is `1111122233`, that would get encoded to `513223`, which is ambigious as to what the original string was. We could include a delimiter, such as a space or comma, but this would require extra logic parsing the encoded text since space is also a valid character. 
+However, implementation wise, things get tricky since we must support all 256 ASCII characters - which include numbers. In this case, without an additional delimiter, it becomes impossible to differentiate which character is the character count, and which one is the character itself. For example, if the text is `1111122233`, that would get encoded to `513223`, which is ambigious as to what the original string was. We could include a delimiter, such as a space or comma, but this would require extra logic parsing the encoded text since space is also a valid character (although space-delimieter would perform similarly, and better/worse in some scenarios).
 
 Instead, given our assumption that the maximum length of a row is 100 characters, we can instead make each number guaranteed two characters. So `45` stays `45`, but `4` becomes `04`. That way, each encoded becomes three bytes, two for the character count and one for the character itself. But what about the case where a character takes the whole row? i.e. if the character count is 100? In this case, we can encode the row as simply the character, and thats it. E.g., if a row was all `a`'s, we'll encode the line as `a`, and when decoding, we can simply check the length. I decided on this approach since it seemed like this case appeared enough times that it could serve as an appropriate custom optimization.
 
@@ -76,8 +76,12 @@ rose.txt | 46 | 1971 | 1512 | - 23%
 cat.txt | 87 | 5284 | 3074 | - 41%
 data.txt | 85 | 5496 | 3114 | - 43%
 
+Thus, in practice, with larger ASCII art of 100 x 100, we should be getting fairly good compression rates, especially with single character lines, like in cat.txt.
+
 ## Optimizations
 
 As mentioned, some files actually do worse. Thus, an optimization that could be made is when the file does worse with RLE compression, is to use another form of compression. It's likely that Huffman Encoding or other similar compression algorithms could support at least a little bit of compression. Alternatively, an easy way to get around this is to simply use the original file. Although this doesn't compress the file at all, it's better than increasing the size of the file.
 
-Another optimization is that instead of expressing each chain of characters as three bytes, instead represent them in 15 bits. The first 7 can be used to represent the count (since 7 bits can be used to represent 0 - 123), and 8 to represent the character. This would save 9 bits per encoding string, which can actually add up.
+Another optimization is that instead of expressing each chain of characters as three bytes, instead represent them in 15 bits. The first 7 can be used to represent the count (since 7 bits can be used to represent 0 - 123), and 8 to represent the character. This would save 9 bits per encoding string.
+
+Finally, as mentioned above, this algorithm is very dependent and catered towards the format of the ASCII art. If there are NOT many lines just completely blank, or of a single character, then it might be worth switching to a space-delimited implementation rather than the current convert to double character count. In addition, the space-delimited implementation would not be limited by a max row length of 100 characters.
