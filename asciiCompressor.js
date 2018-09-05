@@ -30,6 +30,8 @@ function main(){
 function encode(data) {
   let rows = data.split('\n');
   let allResults = [];
+
+  // run RLE on each row
   rows.forEach((row) => {
     let rowChars = row.split('');
     let lastSeen = row[0];
@@ -40,6 +42,7 @@ function encode(data) {
       if ( c === lastSeen ){
         currCount += 1;
       } else {
+        // force each count to be two characters long
         currCount = currCount.toString().length == 1 ? '0' + currCount : currCount.toString();
         result += `${currCount}${lastSeen}`;
         lastSeen = c;
@@ -145,4 +148,4 @@ function analyzeCompression(fileName){
   readFile(fileName, cb);
 }
 
-module.exports = { encode, decode, readFile };
+module.exports = { encode, decode };
