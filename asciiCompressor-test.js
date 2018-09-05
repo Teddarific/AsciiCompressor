@@ -2,6 +2,9 @@ const assert = require('assert');
 const fs = require('fs');
 const { encode, decode } = require('./asciiCompressor');
 
+// to run tests,
+// ./node_modules/mocha/bin/mocha ./
+
 // Encoding tests
 describe('Encoding', function(){
   it('should return blank with empty string', function(){
@@ -77,7 +80,14 @@ describe('Decoding', function() {
 // E2E tests
 describe('e2e encoding and decoding', function(){
 
-  const asciiTests = ['./asciiArt/angry.txt', './asciiArt/data.txt', './asciiArt/monkey.txt'];
+  const asciiTests = [
+    './asciiArt/angry.txt',
+    './asciiArt/data.txt',
+    './asciiArt/cat.txt',
+    './asciiArt/depot.txt',
+    './asciiArt/rose.txt',
+    './asciiArt/nightshot.txt',
+  ];
 
   asciiTests.forEach(function(test){
     it(`should encode and decode ${test}`, function(done){

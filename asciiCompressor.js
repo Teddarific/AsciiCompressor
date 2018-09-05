@@ -8,14 +8,20 @@ main();
 // Main system
 function main(){
   switch ( process.argv[2] ){
+    case 'encode':
     case 'e':
       encodeFile(process.argv[3], process.argv[4]);
       break;
+    case 'decode':
     case 'd':
       decodeFile(process.argv[3], process.argv[4]);
       break;
+    case 'analyze':
     case 'a':
-      encodeAndAnalyze(process.argv[3], process.argv[4]);
+      analyzeCompression(process.argv[3]);
+      break;
+    default:
+      console.log("Invalid command. See README for help.");
       break;
   }
 }
@@ -124,21 +130,19 @@ function writeFile(fileName, data){
   });
 }
 
-function encodeAndAnalyze(fileName, outputFileName){
-  encodeFile(fileName, outputFileName);
-  // Wait 2 seconds since encode file happens async
-  setTimeout(() => {analyzeCompression(fileName, outputFileName)}, 3000);
-}
-
-function analyzeCompression(originalFile, compressedFile){
-  if ( !originalFile || !compressedFile ){
-    console.log("Cannot have null file(s)");
-    return;
+function analyzeCompression(fileName){
+  if ( !fileName ){
+    console.log(`Cannot find file ${fileName}`);
   }
-  const originalCb = (data) => {console.log(`Original: ${data.length}`)};
-  readFile(originalFile, originalCb);
-  const compressedCb = (data) => {console.log(`Compressed: ${data.length}`)};
-  readFile(compressedFile, compressedCb);
+  const cb = (data) => {
+    console.log(`Rows: ${data.split('\n').length}`)
+    console.log(`Original: ${data.length}`)
+    const encodedData = encode(data);
+    console.log(`Compressed: ${encodedData.length}`);
+    const percentReduction = (encodedData.length - data.length) / data.length;
+    console.log(`Percent reduction: ${percentReduction}%`);
+  };
+  readFile(fileName, cb);
 }
 
 module.exports = { encode, decode, readFile };
